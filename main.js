@@ -73,11 +73,16 @@ class GitFileColors extends Plugin {
 
         const statusMap = this.parseGitStatus(result);
 
+        const untrackedDirs = Object.keys(statusMap).filter(p => statusMap[p] === 'untracked');
+
         const fileItems = document.querySelectorAll('.nav-file-title[data-path]');
         for (const item of fileItems) {
             const path = item.getAttribute('data-path');
             item.classList.remove('file-untracked', 'file-modified', 'file-staged');
-            const status = statusMap[path];
+
+            const status = statusMap[path] ||
+                (untrackedDirs.some(dir => path.startsWith(dir + '/')) ? 'untracked' : null);
+
             if (status) {
                 item.classList.add(`file-${status}`);
             }
